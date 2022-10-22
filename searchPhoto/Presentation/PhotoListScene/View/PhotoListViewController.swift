@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PhotoListViewController: BaseViewController {
+final class PhotoListViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

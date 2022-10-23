@@ -10,8 +10,8 @@ import Foundation
 import Alamofire
 
 class APIService {
-    static func searchPhoto(query: String, completionHandler: @escaping (SearchPhoto?, Int?, Error?) -> Void) {
-        let url = "\(APIKey.searchURL)\(query)"
+    static func searchPhoto(query: String, page: Int, completionHandler: @escaping (SearchPhoto?, Int?, Error?) -> Void) {
+        let url = "\(APIKey.searchURL)\(query)&page=\(page)"
         let header: HTTPHeaders = ["Authorization": APIKey.authorization]
         
         AF.request(url, method: .get, headers: header).responseDecodable(of: SearchPhoto.self) { response in

@@ -22,7 +22,7 @@ final class SearchPhotoCollectionViewCell: BaseCollectionViewCell {
     let photoTitleLabel: UILabel = {
         let view = UILabel()
         view.font = .boldSystemFont(ofSize: 18)
-        view.text = "The Face Shop"
+        view.text = "NON"
         view.numberOfLines = 2
         return view
     }()

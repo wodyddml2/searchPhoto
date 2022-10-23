@@ -15,6 +15,7 @@ final class SearchPhotoViewController: BaseViewController {
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
         view.delegate = self
+        view.prefetchDataSource = self
         return view
     }()
     
@@ -27,7 +28,7 @@ final class SearchPhotoViewController: BaseViewController {
     
     private let viewModel = SearchPhotoViewModel()
 
-    private var dataSource: UICollectionViewDiffableDataSource<Int, Result>?
+    private var dataSource: UICollectionViewDiffableDataSource<Int, SearchResult>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,10 +43,11 @@ final class SearchPhotoViewController: BaseViewController {
         configureDataSource()
         
         viewModel.photoList.bind { photo in
-            var snapshot = NSDiffableDataSourceSnapshot<Int, Result>()
+            guard let dataSource = self.dataSource else {return}
+            var snapshot = NSDiffableDataSourceSnapshot<Int, SearchResult>()
             snapshot.appendSections([0])
             snapshot.appendItems(photo.results)
-            self.dataSource?.apply(snapshot)
+            dataSource.apply(snapshot)
         }
     }
     
@@ -78,10 +80,16 @@ extension SearchPhotoViewController {
     }
     
     private func configureDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<SearchPhotoCollectionViewCell, Result> { cell, indexPath, itemIdentifier in
+        let cellRegistration = UICollectionView.CellRegistration<SearchPhotoCollectionViewCell, SearchResult> { cell, indexPath, itemIdentifier in
             let url = URL(string: itemIdentifier.urls.thumb)
             guard let url = url else {return}
             cell.photoImageView.kf.setImage(with: url)
+            if itemIdentifier.resultDescription == nil {
+                cell.photoTitleLabel.text = "\(self.searchController.searchBar.text!)"
+            } else {
+                cell.photoTitleLabel.text = itemIdentifier.resultDescription
+            }
+            
             cell.photoLikeLabel.text = "\(itemIdentifier.likes)"
             cell.photoUpdateLabel.text = itemIdentifier.updatedAt
         }
@@ -98,7 +106,19 @@ extension SearchPhotoViewController {
 
 extension SearchPhotoViewController: UICollectionViewDelegate, UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            if viewModel.photoList.value.results.count - 1 == indexPath.item && viewModel.photoList.value.results.count < viewModel.photoList.value.total {
+                viewModel.requestSearchPhoto(query: searchController.searchBar.text!, page: (viewModel.photoList.value.results.count / 10) + 1)
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = dataSource?.itemIdentifier(for: indexPath) else {return}
+        guard let cell = collectionView.cellForItem(at: indexPath) as? SearchPhotoCollectionViewCell else {return}
         
+        viewModel.addFolder(item: item, text: searchController.searchBar.text!)
+        DocumentManager.shared.saveImageToDocument(fileName: "\(item.id)", image: cell.photoImageView.image!)
     }
 }
 
@@ -106,6 +126,6 @@ extension SearchPhotoViewController: UISearchBarDelegate, UISearchResultsUpdatin
     func updateSearchResults(for searchController: UISearchController) { }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.requestSearchPhoto(query: searchBar.text!)
+        viewModel.requestSearchPhoto(query: searchBar.text!, page: 1)
     }
 }

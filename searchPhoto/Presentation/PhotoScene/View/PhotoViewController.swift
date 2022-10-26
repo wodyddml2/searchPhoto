@@ -7,8 +7,9 @@
 
 import UIKit
 
-import SnapKit
 import Kingfisher
+import SnapKit
+import RxSwift
 
 final class PhotoViewController: BaseViewController {
     
@@ -19,6 +20,8 @@ final class PhotoViewController: BaseViewController {
     }()
     
     let viewModel = PhotoViewModel()
+    
+    let disposeBag = DisposeBag()
 
     private var dataSource: UICollectionViewDiffableDataSource<Int, Photo>?
     
@@ -34,12 +37,15 @@ final class PhotoViewController: BaseViewController {
         collectionView.collectionViewLayout = createLayout()
         configureDataSource()
         
-        viewModel.photo.bind { photo in
+        viewModel.photo
+            .withUnretained(self)
+            .bind { vc, photo in
             var snapshot = NSDiffableDataSourceSnapshot<Int, Photo>()
             snapshot.appendSections([0])
             snapshot.appendItems(photo)
-            self.dataSource?.apply(snapshot)
+            vc.dataSource?.apply(snapshot)
         }
+            .disposed(by: disposeBag)
     }
     
     override func setConstraints() {

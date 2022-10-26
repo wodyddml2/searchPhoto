@@ -8,6 +8,8 @@
 import UIKit
 
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class PhotoFolderViewController: BaseViewController {
     
@@ -20,6 +22,8 @@ final class PhotoFolderViewController: BaseViewController {
     var dataSource: UICollectionViewDiffableDataSource<Int, PhotoFolder>?
     
     let viewModel = PhotoFolderViewModel()
+    
+    let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,13 +45,17 @@ final class PhotoFolderViewController: BaseViewController {
         viewModel.fetchFolder()
         
         configureDataSource()
-        
-        viewModel.folder.bind { folder in
-            var snapshot = NSDiffableDataSourceSnapshot<Int, PhotoFolder>()
-            snapshot.appendSections([0])
-            snapshot.appendItems(folder)
-            self.dataSource?.apply(snapshot)
-        }
+      
+        viewModel.folder
+            .withUnretained(self)
+            .bind(onNext: { vc, folder in
+                print(folder.count)
+                var snapshot = NSDiffableDataSourceSnapshot<Int, PhotoFolder>()
+                snapshot.appendSections([0])
+                snapshot.appendItems(folder)
+                vc.dataSource?.apply(snapshot)
+            })
+            .disposed(by: disposeBag)
     }
     
     

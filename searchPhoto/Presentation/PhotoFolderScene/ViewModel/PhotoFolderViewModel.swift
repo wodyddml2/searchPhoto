@@ -8,10 +8,11 @@
 import Foundation
 
 import RealmSwift
+import RxSwift
 
 final class PhotoFolderViewModel {
-    var folder: Observable<[PhotoFolder]> = Observable([PhotoFolder]())
-    
+    var folder = BehaviorSubject<[PhotoFolder]>(value: [])
+
     let repository = PhotoFolderRepositry()
    
 }
@@ -20,6 +21,6 @@ extension PhotoFolderViewModel {
     func fetchFolder() {
         let task = Array(repository.fetchFolder())
         
-        folder.value.append(contentsOf: task)
+        folder.onNext(task)
     }
 }

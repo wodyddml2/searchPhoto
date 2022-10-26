@@ -22,20 +22,17 @@ final class SearchPhotoCollectionViewCell: BaseCollectionViewCell {
     let photoTitleLabel: UILabel = {
         let view = UILabel()
         view.font = .boldSystemFont(ofSize: 18)
-        view.text = "NON"
         view.numberOfLines = 2
         return view
     }()
     
     let photoLikeLabel: UILabel = {
         let view = UILabel()
-        view.text = "aaaa"
         return view
     }()
     
     let photoUpdateLabel: UILabel = {
         let view = UILabel()
-        view.text = "Ssss"
         return view
     }()
     
@@ -100,7 +97,5 @@ final class SearchPhotoCollectionViewCell: BaseCollectionViewCell {
             make.trailing.lessThanOrEqualTo(-8)
         }
     }
-    
-    
-    
+
 }

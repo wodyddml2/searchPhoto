@@ -3,7 +3,7 @@ import Foundation
 // MARK: - SearchPhoto
 struct SearchPhoto: Codable, Hashable {
     let total, totalPages: Int
-    let results: [SearchResult]
+    var results: [SearchResult]
 
     enum CodingKeys: String, CodingKey {
         case total

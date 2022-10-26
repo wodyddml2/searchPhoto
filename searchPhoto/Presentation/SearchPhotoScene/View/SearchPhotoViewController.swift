@@ -10,12 +10,14 @@ import UIKit
 import SnapKit
 import Kingfisher
 
+import RxSwift
+import RxCocoa
+
 final class SearchPhotoViewController: BaseViewController {
     
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
         view.delegate = self
-        view.prefetchDataSource = self
         return view
     }()
     
@@ -30,6 +32,8 @@ final class SearchPhotoViewController: BaseViewController {
 
     private var dataSource: UICollectionViewDiffableDataSource<Int, SearchResult>?
     
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
        
@@ -38,17 +42,27 @@ final class SearchPhotoViewController: BaseViewController {
     override func configureUI() {
         view.addSubview(collectionView)
         searchControllerSet()
-
+        
         collectionView.collectionViewLayout = createLayout()
         configureDataSource()
         
-        viewModel.photoList.bind { photo in
-            guard let dataSource = self.dataSource else {return}
-            var snapshot = NSDiffableDataSourceSnapshot<Int, SearchResult>()
-            snapshot.appendSections([0])
-            snapshot.appendItems(photo.results)
-            dataSource.apply(snapshot)
-        }
+        viewModel.photoList.bind(onNext: { photo in
+                guard let dataSource = self.dataSource else {return}
+                var snapshot = NSDiffableDataSourceSnapshot<Int, SearchResult>()
+                snapshot.appendSections([0])
+                snapshot.appendItems(photo.results)
+                dataSource.apply(snapshot)
+        })
+        .disposed(by: disposeBag)
+        
+        
+        collectionView.rx.prefetchItems
+            .compactMap(\.last?.item)
+            .withUnretained(self)
+            .subscribe(onNext: { vc, item in
+                vc.viewModel.paginationRequest(item: item, query: vc.searchController.searchBar.text!)
+            })
+            .disposed(by: disposeBag)
     }
     
     override func setConstraints() {
@@ -104,15 +118,7 @@ extension SearchPhotoViewController {
     
 }
 
-extension SearchPhotoViewController: UICollectionViewDelegate, UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        for indexPath in indexPaths {
-            if viewModel.photoList.value.results.count - 1 == indexPath.item && viewModel.photoList.value.results.count < viewModel.photoList.value.total {
-                viewModel.requestSearchPhoto(query: searchController.searchBar.text!, page: (viewModel.photoList.value.results.count / 10) + 1)
-            }
-        }
-    }
-    
+extension SearchPhotoViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = dataSource?.itemIdentifier(for: indexPath) else {return}
         guard let cell = collectionView.cellForItem(at: indexPath) as? SearchPhotoCollectionViewCell else {return}

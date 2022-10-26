@@ -9,7 +9,7 @@ import Foundation
 
 import RealmSwift
 
-class PhotoFolder: Object {
+class PhotoFolder: Object{
     @Persisted var folderName: String
     @Persisted var photoDetail: List<Photo>
     

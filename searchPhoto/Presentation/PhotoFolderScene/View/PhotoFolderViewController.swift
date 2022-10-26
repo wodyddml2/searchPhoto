@@ -27,11 +27,18 @@ final class PhotoFolderViewController: BaseViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "검색", style: .plain, target: self, action: #selector(searchButtonTapped))
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        
+    }
+    
     override func configureUI() {
         view.addSubview(collectionView)
-        viewModel.fetchFolder()
-        
         collectionView.collectionViewLayout = createLayout()
+        
+        viewModel.fetchFolder()
         
         configureDataSource()
         
@@ -42,6 +49,7 @@ final class PhotoFolderViewController: BaseViewController {
             self.dataSource?.apply(snapshot)
         }
     }
+    
     
     override func setConstraints() {
         collectionView.snp.makeConstraints { make in
@@ -81,5 +89,10 @@ extension PhotoFolderViewController {
 }
 
 extension PhotoFolderViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = dataSource?.itemIdentifier(for: indexPath) else {return}
+        let vc = PhotoViewController()
+        vc.viewModel.folderName = item.folderName
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }

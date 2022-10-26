@@ -33,15 +33,6 @@ final class PhotoFolderViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        
-        
-    }
-    
-    override func configureUI() {
-        view.addSubview(collectionView)
-        collectionView.collectionViewLayout = createLayout()
-        
         viewModel.fetchFolder()
         
         configureDataSource()
@@ -49,13 +40,17 @@ final class PhotoFolderViewController: BaseViewController {
         viewModel.folder
             .withUnretained(self)
             .bind(onNext: { vc, folder in
-                print(folder.count)
                 var snapshot = NSDiffableDataSourceSnapshot<Int, PhotoFolder>()
                 snapshot.appendSections([0])
                 snapshot.appendItems(folder)
                 vc.dataSource?.apply(snapshot)
             })
             .disposed(by: disposeBag)
+    }
+    
+    override func configureUI() {
+        view.addSubview(collectionView)
+        collectionView.collectionViewLayout = createLayout()
     }
     
     

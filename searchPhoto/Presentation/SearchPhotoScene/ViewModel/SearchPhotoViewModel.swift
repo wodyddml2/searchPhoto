@@ -14,7 +14,6 @@ final class SearchPhotoViewModel {
     
     var photoList = BehaviorRelay(value: SearchPhoto(total: 0, totalPages: 0, results: []))
     
-    
     let repository = PhotoFolderRepositry()
     
 }
@@ -22,7 +21,8 @@ final class SearchPhotoViewModel {
 extension SearchPhotoViewModel {
     
     func requestSearchPhoto(query: String, page: Int) {
-        APIService.searchPhoto(query: query, page: page) { photo, statusCode, error in
+        APIService.searchPhoto(query: query, page: page) { [weak self] photo, statusCode, error in
+            guard let self = self else {return}
             guard let photo = photo else {return}
             if page == 1 {
                 self.photoList.accept(photo)
@@ -31,8 +31,6 @@ extension SearchPhotoViewModel {
                 value.results.append(contentsOf: photo.results)
                 self.photoList.accept(value)
             }
-            
-            
         }
     }
     

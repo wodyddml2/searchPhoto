@@ -14,7 +14,6 @@ final class PhotoFolderViewModel {
     var folder = BehaviorSubject<[PhotoFolder]>(value: [])
 
     let repository = PhotoFolderRepositry()
-   
 }
 
 extension PhotoFolderViewModel {

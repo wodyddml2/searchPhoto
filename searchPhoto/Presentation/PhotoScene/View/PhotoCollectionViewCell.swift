@@ -22,8 +22,8 @@ class PhotoCollectionViewCell: BaseCollectionViewCell {
     
     let photoTitleLabel: UILabel = {
         let view = UILabel()
-        view.font = .boldSystemFont(ofSize: 20)
-        view.numberOfLines = 0
+        view.font = .boldSystemFont(ofSize: 18)
+        view.numberOfLines = 5
         return view
     }()
 

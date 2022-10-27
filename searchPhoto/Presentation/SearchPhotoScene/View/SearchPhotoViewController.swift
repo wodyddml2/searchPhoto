@@ -9,7 +9,6 @@ import UIKit
 
 import SnapKit
 import Kingfisher
-
 import RxSwift
 import RxCocoa
 
@@ -57,9 +56,9 @@ final class SearchPhotoViewController: BaseViewController {
         
         
         collectionView.rx.prefetchItems
-            .compactMap(\.last?.item)
+            .compactMap {$0.last?.item}
             .withUnretained(self)
-            .subscribe(onNext: { vc, item in
+            .bind(onNext: { vc, item in
                 vc.viewModel.paginationRequest(item: item, query: vc.searchController.searchBar.text!)
             })
             .disposed(by: disposeBag)

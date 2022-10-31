@@ -9,6 +9,19 @@ import Foundation
 
 import Alamofire
 
+//enum APIError: Error {
+//    case invalidHeaders
+//}
+//
+//extension APIError: LocalizedError {
+//    var errorDescription: String? {
+//        switch self {
+//        case .invalidHeaders:
+//            return "검색 결과가 없습니다."
+//        }
+//    }
+//}
+
 enum Router: URLRequestConvertible {
     case get(query: String, page: Int)
     
@@ -42,15 +55,16 @@ enum Router: URLRequestConvertible {
 
 class APIService {
     
-    static func searchPhoto(query: String, page: Int, completionHandler: @escaping (SearchPhoto?, Int?, Error?) -> Void) {
+    static func searchPhoto(query: String, page: Int, completionHandler: @escaping (Result<SearchPhoto, AFError>) -> Void) {
         
         AF.request(Router.get(query: query, page: page)).responseDecodable(of: SearchPhoto.self) { response in
-            let statusCode = response.response?.statusCode
             
-            switch response.result {
-            case .success(let value): completionHandler(value, statusCode, nil)
-            case .failure(let error): completionHandler(nil, statusCode, error)
-            }
+        
+            completionHandler(response.result)
+//            switch response.result {
+//            case .success(let value): completionHandler(value,)
+//            case .failure(let error): completionHandler(nil, statusCode, error)
+//            }
         }
     }
 

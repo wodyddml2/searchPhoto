@@ -9,6 +9,7 @@ import Foundation
 
 import RxSwift
 import RxCocoa
+import Alamofire
 
 final class SearchPhotoViewModel {
     
@@ -22,20 +23,25 @@ final class SearchPhotoViewModel {
 extension SearchPhotoViewModel {
     
     func requestSearchPhoto(query: String, page: Int) {
-        APIService.searchPhoto(query: query, page: page) { [weak self] photo, statusCode, error in
+        APIService.searchPhoto(query: query, page: page) { [weak self] (result: Result<SearchPhoto, AFError>) in
             guard let self = self else {return}
-            guard let photo = photo else {return}
-    
-            if page == 1 {
-                self.photoList.onNext(photo)
-            } else {
-                do {
-                    var value = try self.photoList.value()
-                    value.results.append(contentsOf: photo.results)
-                    self.photoList.onNext(value)
-                } catch {
-                    print("error")
+            switch result {
+            case .success(let photo):
+                if page == 1 {
+                    self.photoList.onNext(photo)
+                } else {
+                    do {
+                        var value = try self.photoList.value()
+                        value.results.append(contentsOf: photo.results)
+                        self.photoList.onNext(value)
+                    } catch {
+                        print("error")
+                    }
                 }
+            case .failure(let error):
+                
+                print(error.errorDescription!)
+                
             }
         }
     }

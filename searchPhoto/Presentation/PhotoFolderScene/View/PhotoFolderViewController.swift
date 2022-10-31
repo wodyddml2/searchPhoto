@@ -72,11 +72,6 @@ final class PhotoFolderViewController: BaseViewController {
         }
     }
 
-//    @objc func searchButtonTapped() {
-//        let vc = SearchPhotoViewController()
-//
-//        navigationController?.pushViewController(vc, animated: true)
-//    }
 }
 
 extension PhotoFolderViewController {

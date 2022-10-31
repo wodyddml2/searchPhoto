@@ -58,13 +58,8 @@ class APIService {
     static func searchPhoto(query: String, page: Int, completionHandler: @escaping (Result<SearchPhoto, AFError>) -> Void) {
         
         AF.request(Router.get(query: query, page: page)).responseDecodable(of: SearchPhoto.self) { response in
-            
-        
+    
             completionHandler(response.result)
-//            switch response.result {
-//            case .success(let value): completionHandler(value,)
-//            case .failure(let error): completionHandler(nil, statusCode, error)
-//            }
         }
     }
 

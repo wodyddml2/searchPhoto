@@ -22,7 +22,6 @@ final class SearchPhotoViewController: BaseViewController {
     
     lazy var searchController: UISearchController = {
         let view = UISearchController(searchResultsController: nil)
-        view.searchBar.delegate = self
         view.searchResultsUpdater = self
         return view
     }()
@@ -45,6 +44,16 @@ final class SearchPhotoViewController: BaseViewController {
         collectionView.collectionViewLayout = createLayout()
         configureDataSource()
         
+        bind()
+    }
+    
+    override func setConstraints() {
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    func bind() {
         viewModel.photoList
             .withUnretained(self)
             .bind(onNext: { vc, photo in
@@ -64,14 +73,14 @@ final class SearchPhotoViewController: BaseViewController {
                 vc.viewModel.paginationRequest(item: item, query: vc.searchController.searchBar.text!)
             })
             .disposed(by: disposeBag)
+        
+        searchController.searchBar.rx.searchButtonClicked
+            .withUnretained(self)
+            .bind { vc, _ in
+                vc.viewModel.requestSearchPhoto(query: vc.searchController.searchBar.text!, page: 1)
+            }
+            .disposed(by: disposeBag)
     }
-    
-    override func setConstraints() {
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
-        }
-    }
-    
     
 }
 
@@ -131,8 +140,4 @@ extension SearchPhotoViewController: UICollectionViewDelegate {
 
 extension SearchPhotoViewController: UISearchBarDelegate, UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) { }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.requestSearchPhoto(query: searchBar.text!, page: 1)
-    }
 }

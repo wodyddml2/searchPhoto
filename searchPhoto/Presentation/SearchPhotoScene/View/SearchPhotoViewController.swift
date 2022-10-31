@@ -45,10 +45,12 @@ final class SearchPhotoViewController: BaseViewController {
         collectionView.collectionViewLayout = createLayout()
         configureDataSource()
         
-        viewModel.photoList.bind(onNext: { photo in
-                guard let dataSource = self.dataSource else {return}
+        viewModel.photoList
+            .withUnretained(self)
+            .bind(onNext: { vc, photo in
+                guard let dataSource = vc.dataSource else {return}
                 var snapshot = NSDiffableDataSourceSnapshot<Int, SearchResult>()
-                snapshot.appendSections([0])
+                snapshot.appendSections([0]) // enum mainsection
                 snapshot.appendItems(photo.results)
                 dataSource.apply(snapshot)
         })

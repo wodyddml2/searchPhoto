@@ -22,7 +22,6 @@
 		6350E3552901613E00169C8B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E3542901613E00169C8B /* BaseViewController.swift */; };
 		6350E3572901617800169C8B /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E3562901617800169C8B /* BaseView.swift */; };
 		6350E359290161B900169C8B /* BaseCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E358290161B900169C8B /* BaseCollectionViewCell.swift */; };
-		6350E35B290161E300169C8B /* BaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E35A290161E300169C8B /* BaseTableViewCell.swift */; };
 		6350E3612901623700169C8B /* PhotoFolderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E3602901623700169C8B /* PhotoFolderViewModel.swift */; };
 		6350E3652901625F00169C8B /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E3642901625F00169C8B /* Observable.swift */; };
 		6350E3672901631100169C8B /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6350E3662901631100169C8B /* APIService.swift */; };
@@ -56,7 +55,6 @@
 		6350E3542901613E00169C8B /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		6350E3562901617800169C8B /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		6350E358290161B900169C8B /* BaseCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionViewCell.swift; sourceTree = "<group>"; };
-		6350E35A290161E300169C8B /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
 		6350E3602901623700169C8B /* PhotoFolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFolderViewModel.swift; sourceTree = "<group>"; };
 		6350E3642901625F00169C8B /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		6350E3662901631100169C8B /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
@@ -150,7 +148,6 @@
 				6350E3542901613E00169C8B /* BaseViewController.swift */,
 				6350E3562901617800169C8B /* BaseView.swift */,
 				6350E358290161B900169C8B /* BaseCollectionViewCell.swift */,
-				6350E35A290161E300169C8B /* BaseTableViewCell.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -365,7 +362,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6350E35B290161E300169C8B /* BaseTableViewCell.swift in Sources */,
 				6350E3552901613E00169C8B /* BaseViewController.swift in Sources */,
 				63D99BDC29054FC100B3A699 /* DocumentManager.swift in Sources */,
 				6350E36C2901686300169C8B /* SearchPhotoCollectionViewCell.swift in Sources */,

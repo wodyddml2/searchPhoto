@@ -12,7 +12,8 @@ import RxCocoa
 
 final class SearchPhotoViewModel {
     
-    var photoList = BehaviorRelay(value: SearchPhoto(total: 0, totalPages: 0, results: []))
+    var photoList = BehaviorSubject(value: SearchPhoto(total: 0, totalPages: 0, results: []))
+    // subject error handling, 2단계... Single.......... bonus
     
     let repository = PhotoFolderRepositry()
     
@@ -24,20 +25,32 @@ extension SearchPhotoViewModel {
         APIService.searchPhoto(query: query, page: page) { [weak self] photo, statusCode, error in
             guard let self = self else {return}
             guard let photo = photo else {return}
+    
             if page == 1 {
-                self.photoList.accept(photo)
+                self.photoList.onNext(photo)
             } else {
-                var value = self.photoList.value
-                value.results.append(contentsOf: photo.results)
-                self.photoList.accept(value)
+                do {
+                    var value = try self.photoList.value()
+                    value.results.append(contentsOf: photo.results)
+                    self.photoList.onNext(value)
+                } catch {
+                    print("error")
+                }
             }
         }
     }
     
     func paginationRequest(item: Int, query: String) {
-        if item == photoList.value.results.count - 1 && photoList.value.results.count < photoList.value.total {
-            requestSearchPhoto(query: query, page: (photoList.value.results.count / 10) + 1)
+        
+        do {
+            let value = try photoList.value()
+            if item == value.results.count - 1 && value.results.count < value.total {
+                requestSearchPhoto(query: query, page: (value.results.count / 10) + 1)
+            }
+        } catch {
+            print("error")
         }
+        
     }
     
     func addFolder(item: SearchResult, text: String) {
@@ -53,7 +66,7 @@ extension SearchPhotoViewModel {
             
         } else {
             
-            let folder = repository.fetchFolderFilter(text: text)[0]
+            guard let folder = repository.fetchFolderFilter(text: text).first else {return}
             let item = Photo(photoDescription: item.resultDescription ?? text, photoURL: item.links.downloadLocation, photoId: item.id)
             do {
                 try repository.appendPhoto(folder: folder, item: item)

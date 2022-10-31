@@ -43,3 +43,4 @@ class PhotoFolderRepositry: PhotoRepositoryType {
         }
     }
 }
+// repository 분리

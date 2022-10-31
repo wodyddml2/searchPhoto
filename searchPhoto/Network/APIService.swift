@@ -9,12 +9,42 @@ import Foundation
 
 import Alamofire
 
+enum Router: URLRequestConvertible {
+    case get(query: String, page: Int)
+    
+    var baseURL: URL {
+        return URL(string: APIKey.searchURL + path)!
+    }
+    
+    var header: HTTPHeaders {
+        return ["Authorization": APIKey.authorization]
+    }
+    
+    var method: HTTPMethod {
+        return .get
+    }
+    
+    var path: String {
+        switch self {
+        case .get(let query, let page):
+            return "\(query)&page=\(page)"
+        }
+    }
+    
+    func asURLRequest() throws -> URLRequest {
+        let url = baseURL
+        var request = URLRequest(url: url)
+        request.method = method
+        request.headers = header
+        return request
+    }
+}
+
 class APIService {
+    
     static func searchPhoto(query: String, page: Int, completionHandler: @escaping (SearchPhoto?, Int?, Error?) -> Void) {
-        let url = "\(APIKey.searchURL)\(query)&page=\(page)"
-        let header: HTTPHeaders = ["Authorization": APIKey.authorization]
         
-        AF.request(url, method: .get, headers: header).responseDecodable(of: SearchPhoto.self) { response in
+        AF.request(Router.get(query: query, page: page)).responseDecodable(of: SearchPhoto.self) { response in
             let statusCode = response.response?.statusCode
             
             switch response.result {
@@ -26,3 +56,6 @@ class APIService {
 
     private init() { }
 }
+
+// urlrequestconvertible : url, header 개선
+// escaping closure -> Result Type

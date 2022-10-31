@@ -19,6 +19,8 @@ final class PhotoFolderViewController: BaseViewController {
         return view
     }()
     
+    let searchButton = UIBarButtonItem(title: "검색", style: .plain, target: PhotoFolderViewController.self, action: nil)
+    
     var dataSource: UICollectionViewDiffableDataSource<Int, PhotoFolder>?
     
     let viewModel = PhotoFolderViewModel()
@@ -28,7 +30,17 @@ final class PhotoFolderViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        print("FileURL: \(repository.localRealm.configuration.fileURL!)")
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "검색", style: .plain, target: self, action: #selector(searchButtonTapped))
+        
+        searchButton.rx.tap
+            .withUnretained(self)
+            .bind { viewController, _ in
+                let vc = SearchPhotoViewController()
+                
+                viewController.navigationController?.pushViewController(vc, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        navigationItem.rightBarButtonItem = searchButton
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,11 +72,11 @@ final class PhotoFolderViewController: BaseViewController {
         }
     }
 
-    @objc func searchButtonTapped() {
-        let vc = SearchPhotoViewController()
-        
-        navigationController?.pushViewController(vc, animated: true)
-    }
+//    @objc func searchButtonTapped() {
+//        let vc = SearchPhotoViewController()
+//
+//        navigationController?.pushViewController(vc, animated: true)
+//    }
 }
 
 extension PhotoFolderViewController {

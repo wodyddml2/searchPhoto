@@ -20,7 +20,25 @@ final class SearchPhotoViewModel {
     
 }
 
-extension SearchPhotoViewModel {
+extension SearchPhotoViewModel: ViewModelType {
+    
+    struct Input {
+        let prefetch: ControlEvent<[IndexPath]>
+        let search: ControlEvent<Void>
+    }
+    
+    struct Output {
+        let photoList: BehaviorSubject<SearchPhoto>
+        let prefetch: Observable<Int>
+        let search: ControlEvent<Void>
+    }
+    
+    func transform(input: Input) -> Output {
+        let prefetch = input.prefetch
+            .compactMap {$0.last?.item}
+        
+        return Output(photoList: photoList, prefetch: prefetch, search: input.search)
+    }
     
     func requestSearchPhoto(query: String, page: Int) {
         APIService.searchPhoto(query: query, page: page) { [weak self] (result: Result<SearchPhoto, AFError>) in

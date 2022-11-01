@@ -54,7 +54,12 @@ final class SearchPhotoViewController: BaseViewController {
     }
     
     func bind() {
-        viewModel.photoList
+        
+        let input = SearchPhotoViewModel.Input(prefetch: collectionView.rx.prefetchItems, search: searchController.searchBar.rx.searchButtonClicked)
+        
+        let output = viewModel.transform(input: input)
+        
+        output.photoList
             .withUnretained(self)
             .bind(onNext: { vc, photo in
                 guard let dataSource = vc.dataSource else {return}
@@ -65,16 +70,15 @@ final class SearchPhotoViewController: BaseViewController {
         })
         .disposed(by: disposeBag)
         
-        
-        collectionView.rx.prefetchItems
-            .compactMap {$0.last?.item}
+     
+        output.prefetch
             .withUnretained(self)
             .bind(onNext: { vc, item in
                 vc.viewModel.paginationRequest(item: item, query: vc.searchController.searchBar.text!)
             })
             .disposed(by: disposeBag)
         
-        searchController.searchBar.rx.searchButtonClicked
+        output.search
             .withUnretained(self)
             .bind { vc, _ in
                 vc.viewModel.requestSearchPhoto(query: vc.searchController.searchBar.text!, page: 1)

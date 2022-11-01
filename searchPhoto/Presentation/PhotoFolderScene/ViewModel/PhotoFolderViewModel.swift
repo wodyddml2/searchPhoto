@@ -17,6 +17,7 @@ final class PhotoFolderViewModel {
 }
 
 extension PhotoFolderViewModel {
+    
     func fetchFolder() {
         let task = Array(repository.fetch())
         
